@@ -143,6 +143,25 @@ def test_when_merge_similar_or_contained_selected_then_default_conflict_handled(
                     OperatorResult(17, 31, 'CREDIT_CARD', '4151 3217 6243',  'keep')
                 ]
             )
+        ),
+        # A trim makes two results share a start; the lower-scored one is trimmed
+        # after the other instead of being cut to zero length
+        (
+            "aaaaaaaaaabbbbbcccccdddd",
+            [
+                RecognizerResult("A", 0, 10, 0.9),
+                RecognizerResult("B", 5, 15, 0.5),
+                RecognizerResult("C", 8, 20, 0.4)
+            ],
+            ConflictResolutionStrategy.REMOVE_INTERSECTIONS,
+            EngineResult(
+                text="aaaaaaaaaabbbbbcccccdddd",
+                items=[
+                    OperatorResult(0, 10, 'A', 'aaaaaaaaaa', 'keep'),
+                    OperatorResult(10, 15, 'B', 'bbbbb', 'keep'),
+                    OperatorResult(15, 20, 'C', 'ccccc', 'keep')
+                ]
+            )
         )
 
     ]
